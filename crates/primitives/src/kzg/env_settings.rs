@@ -1,9 +1,5 @@
-use super::{
-    generated::{G1_POINTS, G2_POINTS},
-    KzgSettings,
-};
-use alloc::{boxed::Box, sync::Arc};
-use once_cell::race::OnceBox;
+use super::KzgSettings;
+use alloc::sync::Arc;
 
 /// KZG Settings that allow us to specify a custom trusted setup.
 /// or use hardcoded default settings.
@@ -22,14 +18,7 @@ impl EnvKzgSettings {
     /// In will initialize the default settings if it is not already loaded.
     pub fn get(&self) -> &KzgSettings {
         match self {
-            Self::Default => {
-                static DEFAULT: OnceBox<KzgSettings> = OnceBox::new();
-                DEFAULT.get_or_init(|| {
-                    let settings = KzgSettings::load_trusted_setup(G1_POINTS, G2_POINTS)
-                        .expect("failed to load default trusted setup");
-                    Box::new(settings)
-                })
-            }
+            Self::Default => c_kzg::ethereum_kzg_settings(0),
             Self::Custom(settings) => settings,
         }
     }

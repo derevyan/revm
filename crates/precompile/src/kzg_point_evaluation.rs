@@ -1,5 +1,5 @@
 use crate::{Error, Precompile, PrecompileAddress, PrecompileResult, B160};
-use c_kzg::{Bytes32, Bytes48, KzgProof, KzgSettings};
+use c_kzg::{Bytes32, Bytes48, KzgSettings};
 use revm_primitives::{hex_literal::hex, Env};
 use sha2::{Digest, Sha256};
 
@@ -69,7 +69,7 @@ fn verify_kzg_proof(
     proof: &Bytes48,
     kzg_settings: &KzgSettings,
 ) -> bool {
-    match KzgProof::verify_kzg_proof(commitment, z, y, proof, kzg_settings) {
+    match kzg_settings.verify_kzg_proof(commitment, z, y, proof) {
         Ok(ok) => ok,
         #[cfg(not(debug_assertions))]
         Err(_) => false,
